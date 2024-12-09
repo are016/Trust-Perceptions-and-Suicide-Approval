@@ -1,0 +1,445 @@
+---
+title: "Function Notes"
+author: '2137436'
+date: "2024-11-26"
+output: html_document
+---
+
+This document lists all custom functions that have been created for the current analysis. It details the purpose of each function and the syntax required to use them. Some functions are usable by themselves (e.g., `get_mode`, `centre`, `get_class`) while others depend on existing R packages or other custom functions to work properly. Where such dependencies exist, this is highlighted in the function notes.   
+
+### get_mode
+
+Description: Calculates the statistical mode for a character or factor variable
+
+Syntax:
+`get_mode(variable)`
+
+* variable = A character or factor variable
+
+
+### centre
+
+Description: Applies mean centring by subtracting the mean from scores on a chosen variable.
+
+Syntax:
+`centre(variable)`
+
+* variable = A numeric or integer variable
+
+
+### standardize
+
+Description: Applies standardization by subtracting the mean from scores on a chosen variable and dividing by the standard deviation.
+
+Syntax:
+`standardize(variable)`
+
+* variable = A numeric or integer variable
+
+
+### get_class
+
+Description: Extracts the names of all variables in a data set that have a given class
+
+Syntax:
+`get_class(data, of_class)`
+
+* data = the data from which the variables are taken
+* of_class = the desired class to search for, specified as a character value
+
+### dummy_out
+
+Description: Takes the values of a character or factor variable and constructs a series of dichotomous variables that indicate whether the value was observed (1) or not (0). For example, a variable "VAR" with values A, B, and C will be transformed into three variables "A", "B", and "C". 
+
+Syntax:
+`dummy_out(variable, data, rm_original = FALSE)`
+
+* variable = a character or factor variable
+* data = the data from which the variable is taken
+* rm_original = should the original variable be removed after dummying out responses? Defaults to FALSE
+
+
+### value_index
+
+Description: Compute an index for self-expression values based on the procedures outlined by Welzel (2010). Requires the following variables to present in the data: "Abortion", "Divorce", "Homosexuality", "Men_Jobs", "Men_Pol", "Men_Uni",  "Independence", "Imagine", "Obedience", "Faith".
+
+Syntax:
+`value_index(data, index)`
+
+* data = the data from which the index is to be computed
+* index = whether to use all variables for computing the index ("full") or to exclude the variable on homosexuality ("partial"). This functionality was added to due to the high rate of non-response to this variable. 
+
+
+### get_missing
+
+Description: Compute the percentage of observations with complete and missing values in a data set.
+
+Syntax:
+`get_missing(data)`
+
+* a data frame
+
+### compare_missing
+
+Description: Compares observations with complete and missing information based on a desired characteristic. If the characteristic is of class numeric/integer, a 2-sample t-test is conducted. If the characteristic is of class factor/character, a chi-squared test is conducted. 
+
+Syntax:
+`compare_missing(data, variable, alpha = 0.05)`
+
+* data = the data to be used for comparing observations with complete and missing information
+* variable = the characteristic to compare observations on
+* alpha = the desired alpha level for computing confidence intervals. Defaults to 0.05
+
+
+
+### z_score 
+
+Description: Calculate the z-score for a particular observation on a chosen variable. Depends on `standardize`
+
+Syntax:
+z_score(data, variable, obs_var, obs)
+
+* data = the data from which the variables are taken
+* variable = the variable to be tested, specified as a character value
+* obs_var = the variable used for identifying observations, specified as a character value
+* obs = the name of the observation to be tested
+  
+  
+
+### cor_mx
+
+Description: Calculates a correlation matrix and arranges the output into a matrix. Allows for Pearson and polychoric correlations using the `pysch` package. 
+
+Syntax:
+`cor_mx(data, vars = NULL, type = "Pearson")`
+
+* data = the data from which to compute correlations
+* vars = the variables to use for calculating correlations, specificed as a character vector. If `NULL` (default), all variables are used. 
+* type = Which correlation type to calculate. Can choose from "Pearson" or "Polychoric" correlation, specificed as a character value. Defaults to Pearson.
+
+### alpha_table
+
+Description: Rearranges output from Cronbach's alpha calculated using the `psych` package.
+
+Syntax:
+`alpha_table(data)`
+
+* data = the results from running `psych::alpha` 
+
+
+### eigen_table
+
+Description: Rearranges output from an eigen value decomposition using the `base` package.
+
+Syntax:
+`eigen_table(data)`
+
+* data = the results of running `base::eigen`
+
+### arrange_loadings 
+
+Description: Rearranges factor loading and communalities from a model fitted using the `psych` package.
+
+Syntax:
+`arrange_loadings(mod, n_dim)`
+
+* mod = A factor analysis model fitted using `psych::fa`
+* n_dim = the number of factors/latent dimensions used in model fitting
+
+
+### arrange_cors 
+
+Description: Rearranges inter-factor correlations from a model fitted using the `psych` package.
+
+Syntax:
+`arrange_cors(mod, n_dim)`
+
+* mod = A factor analysis model fitted using `psych::fa`
+* n_dim = the number of factors/latent dimensions used in model fitting
+
+
+### arrange_fit_indices 
+
+Description: Rearranges fit indices from a model fitted using the `psych` package.
+
+Syntax:
+`arrange_fit_indices(mod)`
+
+* mod = A factor analysis model fitted using `psych::fa`
+
+
+### fa_table
+
+Description: Rearranges output from a model fitted using the `psych` package. Depends on `arrange_loadings`, `arrange_cors`, and `arrange_fit_indices`.
+
+Syntax:
+`fa_table(mod)`
+
+* mod = A factor analysis model fitted using `psych::fa`
+
+
+
+### structure_mx
+
+Description: Computes structure coefficients from a model fitted using the `psych` package.
+
+Syntax:
+`structure_mx(mod)`
+
+* mod = A factor analysis model fitted using `psych::fa`
+
+
+
+### map_table 
+
+Description: Arranges output from computing Minimum Average Partial (MAP) values using the `psych` package.
+
+Syntax:
+`map_table(test, n_factors = NULL)`
+
+* test = the results of running `psych::vss`
+* n_factors = the maximum number of factor solutions to present. If `NULL` (default), shows the results for all possible factor solutions
+
+
+### verify_structure
+
+Description: Checks whether the structure of factor loadings from a list of factor analysis models matches a predefined structure provided by the user. Only compatible with 2-factor models.
+
+Syntax:
+`verify_structure(loads, factor_str, cutoff)`
+
+* loads = a list where each element contains a matrix of factor loadings.
+* factor_str = a matrix of TRUE/FALSE values with the same dimensions as the factor loadings. The matrix is used to specify the expected pattern of loadings. TRUE values are used to indicate that a factor loading surpasses the desired cutoff in absolute terms.
+* cutoff = the desired cutoff for determining whether a factor loading is salient. The cutoff is applied using absolute values of loadings. 
+
+
+### index_chain
+
+Description: Adds a column called "chain" to a matrix of draws from the posterior distribution. The matrix is converted to a data frame and the specified chain id is applied
+
+Syntax:
+`index_chain(post_draws, chain_id)`
+
+* post_draws = a matrix of posterior draws from an MCMC model fitted using `MCMCglmm`
+* chain_id = a number indicating which chain the posterior draws were taken from
+
+
+### arrange_mcmc
+
+Description: Arranges the results of multiple runs of `MCMCglmm` stored in a list. Extracts the posterior draws from each run and combines them into a single data frame while indexing the chain from which the draws were taken. Depends on `index_chain` and `tidyverse package`
+
+Syntax: 
+`arrange_mcmc(post_draws)`
+
+* post_draws = a list where each element corresponds to a different run of the same `MCMCglmm` model (i.e., the posterior draws for a given chain)
+
+
+### mcmc_chains
+
+Description: Function for running `MCMCglmm` models with multiple chains. Combines the output from these chains and saves different quantities under a list. Works for normal and probit models. Depends on `arrange_mcmc`, `index_chain` and `tidyverse` package
+
+Syntax:
+`mcmc_chains(..., chains, start = NULL)`
+
+* ... = the formula and estimation details for running an `MCMCglmm` model.
+* chains = the number of chains to estimate
+* start = a list of starting values with as many elements as there are chains. The starting values need to be specified in the format required by `MCMCglmm`. 
+
+
+### jags_dic
+
+Description: Calculates the deviance information criterion (DIC) based on the method implemented in R2jags: mean(deviance) + (0.5*var(deviance))
+
+Syntax:
+`jags_dic(mod)`
+
+* mod = an MCMC model generated using `mcmc_chains`
+
+
+### mcmc_summary
+
+Description: Computes basic model posterior statistics and diagnostics from a model fitted using `mcmc_chains`. Depends on `rstan`, `jags_dic` and `tidyverse` package 
+
+Syntax:
+`mcmc_summary(mod, element = "estimates", alpha = 0.05, params = NULL)`
+
+* mod = a model fitted using `mcmc_chains`
+* element = the feature of the MCMC model for which posterior statistics and convergence diagnostics are to be computed. Defaults to "estimates"
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+* params = the names of the parameters for which posterior statistics and convergence diagnostics are to be computed. Needs to be specified as a character vector. If `NULL` (default), only the intercept and deviance are used for calculations. 
+
+
+
+### mcmc_trace
+
+Description: Generates trace plots from a model fitted using `mcmc_chains`. Depends on `tidyverse` package 
+
+Syntax:
+`mcmc_trace(mod, element = "estimates", param, segment = NULL)`
+
+* mod = a model fitted using `mcmc_chains`
+* element = the feature of the MCMC model to be used for plotting.
+* param = the names of the parameter to use for plotting.
+* segment = the span of iterations to include in the trace plot. If NULL (default), all iterations are used. 
+
+
+### get_vpc
+
+Description: Calculate the posterior distribution of variance partition coefficients from a multilevel model fitted using `mcmc_chains`. Depends on `tidyverse` package 
+
+Syntax:
+`get_vpc(mod, alpha = 0.05)`
+
+* mod = a model fitted using `mcmc_chains`
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+
+
+### post_sum
+
+Description: Get summary statistics for the posterior distribution. Similar to `mcmc_summary` only it works with data frames that are not stored as part of the `mcmc_chains` model. Depends on `tidyverse` package 
+
+Syntax:
+`post_sum <- function(data, alpha = 0.05)`
+
+* mod = a data frame of draws from the posterior distribution
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+
+### mcmc_predict
+
+Description: Generate predicted values from a model fitted using `mcmc_chains`. Requires the user to select a specific variable for generating predictions while holding all other factors constant (i.e., at 0). Allows for including polynomial terms. Depends on `tidyverse` package 
+
+Syntax:
+`mcmc_predict(mod, params, variable, min_val, max_val, n_vals, poly_terms = NULL, alpha = 0.05)`
+
+* mod = a model fitted using `mcmc_chains`
+* params = the names of the parameters included in the model
+* variable = the name of the variable to be used for generating predictions
+* min_val = the desired minimum value for predictor variable
+* max_val = the desired maximum value for the predictor variable
+* n_vals = the number of predictor variable values to use in calculations, ranging from the minimum to the maximum value as specified above
+* poly_terms = the names of any polynomial terms that are used for modelling curvilinear relationships. Needs to be specified as a character vector. 
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+
+
+### get_error
+
+Description: Calculates the residuals for a given cluster after fitting a multilevel model using `mcmc_chains`. This involves (1) calculating fitted values based on the observed data and specified model and (2) subtracting the fitted values from the observed values for residuals. Depends on `tidyverse` package 
+
+Syntax:
+`get_error(mod, data, outcome, cluster_var, cluster, params, alpha = 0.05)`
+
+* mod = a model fitted using `mcmc_chains`
+* data = the data that was used to fit the model
+* cluster_var = the name of the clustering variable in the data set - e.g., if observations were clustered by the variable "Country", this would form the cluster_var
+* cluster = the specific cluster that is desired - e.g., if residuals were wanted for the "UK" in particular, this would be the cluster
+* params = the names of the parameters included in the model
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+
+
+### get_re
+
+Description: Extract random effects from an `mcmc_chains model`. Adds the grand mean to the random deviation to produce the relevant effect
+
+Syntax:
+`get_re(mod, variable, cluster_var)`
+
+* mod = a model fitted using `mcmc_chains`
+* variable = the name of the desired random effect 
+* cluster_var = the name of the clustering variable in the data set - e.g., if observations were clustered by the variable "Country", this would form the cluster_var
+
+
+### arrange_re
+
+Description: Converts a data frame of random effects into a list, where each element corresponds to the posterior distribution for a given cluster. Depends on `tidyverse` package 
+
+Syntax:
+`arrange_re(re, var_name)`
+
+* re = a data frame of random effects, where each column corresponds to the posterior distribution for a given cluster
+* var_name = the name to be assigned to the random effects
+
+### mcmc_slopes
+
+Description: Generates predicted values from an `mcmc_chains` model while allowing random slopes. Depends on `get_re`, `arrange_re` and `tidyverse` package
+
+Syntax:
+`mcmc_slopes(mod, params, variable, cluster_var, poly_terms = NULL, min_val, max_val, n_vals)`
+
+* mod = a multilevel model fitted using `mcmc_chains`
+* params = the names of the parameters included in the model
+* variable = the name of the variable to be used for generating predictions
+* cluster_var = the name of the clustering variable in the data set - e.g., if observations were clustered by the variable "Country", this would form the cluster_var
+* poly_terms = the names of any polynomial terms that are used for modelling curvilinear relationships. Needs to be specified as a character vector. 
+* min_val = the desired minimum value for the predictor variable
+* max_val = the desired maximum value for the predictor variable
+* n_vals = the number of predictor variable values to use in calculations, ranging from the minimum to the maximum value as specified above
+
+
+### select_cluster
+
+Description: Extracts a desired number of clusters that are intended to reflect the distribution of random effects. This involves ranking the clusters in terms of the magnitude of their random effects and selecting clusters from the smallest to the largest until the desired number of clusters is achieved.  
+
+Syntax:
+`select_cluster(mod, re, n_cluster)`
+
+* mod = a multilevel model fitted using `mcmc_chains`
+* re = a data frame of random effects, where each column corresponds to the posterior distribution for a given cluster
+* n_cluster = the desired number of clusters
+
+### scale_posterior
+
+Description: Scales the posterior distribution for a probit model fitted using `mccm_chains` so that residual variance is set to 0. The function is based on procedures outlined by Hadfield (2017).
+
+Syntax:
+`scale_posterior(mod)`
+
+* mod = a probit model fitted using `mcmc_chains`
+
+
+### get_predictions
+
+Description: Generates predicted values from an mcmc_chains models without intercept term.
+
+Syntax:
+`get_predictions(mod, params, variable, min_val, max_val, n_vals)`
+
+* mod = a model fitted using `mcmc_chains`
+* params = the names of the parameters included in the model
+* variable = the name of the variable to be used for generating predictions
+* min_val = the desired minimum value for the predictor variable
+* max_val = the desired maximum value for the predictor variable
+* n_vals = the number of predictor variable values to use in calculations, ranging from the minimum to the maximum value as specified above
+
+
+
+### mcmc_probit_predict
+
+Description: Generates predicted probabilities from a probit model fitted using `mcmc_chains`. Depends on `get_predictions` and `tidyverse` package
+
+`mcmc_probit_prob(mod, params, variable, min_val, max_val, n_vals, alpha = 0.05)`
+
+* mod = a model fitted using `mcmc_chains`
+* params = the names of the parameters included in the model
+* variable = the name of the variable to be used for generating predictions
+* min_val = the desired minimum value for the predictor variable
+* max_val = the desired maximum value for the predictor variable
+* n_vals = the number of predictor variable values to use in calculations, ranging from the minimum to the maximum value as specified above
+* alpha = the desired alpha level for computing posterior credible intervals. Defaults to 0.05
+
+
+### get_cuts
+
+Description: Calculate cut points from a probit model fitted using `mcmc_chains` so that they are comparable to frequentist results and can be used for predictions. 
+
+Syntax:
+`get_cuts(mod)`
+
+* mod = a probit model fitted using `mcmc_chains`
+
+
+## Cited Works
+
+
+Hadfield, J.D. (2017) _MCMCglmm: Course Notes_, available: <http://cran.nexr.com/web/packages/MCMCglmm/vignettes/CourseNotes.pdf> [accessed 18/04/2024].
+
+Welzel, C. (2010) 'How Selfish Are Self-Expression Values? A Civicness Test', _Journal of Cross-Cultural Psychology_, 41(2), 152-174, available: <http://dx.doi.org/10.1177/0022022109354378>
